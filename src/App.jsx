@@ -5,9 +5,12 @@ function App() {
 
   const [n, setN] = useState(); //State to store the number of elements
   const [arr, setArray] = useState([]); // State to store the generated array
-  const [elements, setElements] = useState(); //State to store the entered elements
+  const [elements, setElements] = useState([]); //State to store the entered elements
   const [currentElement, setCurrentElement] = useState(''); //State to to store the current elements being entered
-
+  const [target, setTarget] = useState(''); //State for target element
+  const [isLoading, setIsLoading] = useState(false); //Loading state for search element
+  const [error, setError] = useState(''); //Error state for empty target input
+  
   // for (let i = 0; i < n; i++) {
   //   arr[i] = i;
   // } // const arr = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -38,6 +41,24 @@ function App() {
     // }
     setArray(newArr);
   };
+
+  //Handling the search when target is provided
+  const handleTargetChange = (e) => {
+    setTarget(e.target.value); //setting the target value
+    setError(''); //Resetting the error message if input is updated;
+  }
+
+  // Executing the search when the target is provided
+  const handleSearch = () => {
+    if (target === '') {
+      setError('Please enter a valid target element.');
+      return;
+    }
+    setIsLoading(true); //set loading to true
+    setTimeout(() => {
+      setIsLoading(false); //set loading to false after a brief delay
+    }, 2000); // Simulating a delay of 2 seconds for 'search'
+  }
 
 
   return (
@@ -71,27 +92,45 @@ function App() {
           - When the target element input is null. then it should through an error message in the screen saying certain error message.
       */}
 
-      <div className="target-container">
-        <input type="number" placeholder='Enter the target'/>
-        <button>Enter</button>
-      </div>
-
-      <div className="search">
-        <button>Execute</button>
-
-        {/* I will be cool it will take loading a few seconds to load, there should be a loading message displaying the following message
+      {/* I will be cool it will take loading a few seconds to load, there should be a loading message displaying the following message
             "Loading... (This is just to look cool, the algorithm doesn't take time to execute)."
         */}
 
+      <div className="target-container">
+        <input type="number" placeholder='Enter the target' value={target} onChange={handleTargetChange}/>
+        <button onClick={handleSearch}>Search</button>
       </div>
 
+      {/* Error message for target input */}
+      {error && <p style={{color: 'red'}}>{error}</p>}
+
+      {/* Search execution with loading state */}
+      <div className="search">
+        {isLoading ? (
+          <p>Loading... (This is just to look cool, the algorithm doesn't take much time to execute).</p>
+        ):(
+          <p>Search Completed.</p>
+        )}
+      </div>
     </div>
 
     {/* ------------- This is the code display the arrays ------------- */}
       <div className="arr-container">
-        {arr.map((arr, index) => (
-          <div key={index} className='box'>{arr}</div>
-        ))}
+        {arr.length > 0 && (
+          <div>
+            <h3>Generated Array: </h3>
+            <div className="array-box">{arr.join(', ')}</div>
+          </div>
+        )}
+      </div>
+
+      <div className="entered-elements">
+        <h3>Entered Elements: </h3>
+        <ul>
+          {elements.map((element, index) => (
+            <li key = {index}>{element}</li>
+          ))}
+        </ul>
       </div>
     </>
   )
